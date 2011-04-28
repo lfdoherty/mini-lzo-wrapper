@@ -1,0 +1,17 @@
+{
+	"name": "mini-lzo-wrapper",
+	"version": "0.1",
+	"description": "A very low-level wrapper around the minilzo fast compression library",
+	"main": "lzo",
+	"scripts": {
+       "install": "node-waf configure build"
+	},
+	"engines": {
+		"node": ">=0.4.0"
+	},
+	"licenses": [
+		{
+			"type": "MIT"
+		}
+	]
+}

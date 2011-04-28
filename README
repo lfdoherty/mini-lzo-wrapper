@@ -1,0 +1,11 @@
+
+'Matterhorn' is a means for composing web application modules built using node.js and the express framework,
+and a collection of such modules.
+
+Right now, this software is undocumented and largely untested.  You'd be crazy to use it.
+
+*****
+
+This is a node.js wrapper of the mini-lzo compression library available here: http://www.oberhumer.com/opensource/lzo/
+
+As far as I can tell, the lzo.cc file probably falls under GPL2 due the license's viral nature.
