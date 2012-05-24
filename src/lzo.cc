@@ -85,29 +85,56 @@ lzo_compress(const Arguments &args)
 {
     HandleScope scope;
 
-    if (args.Length() != 2)
-        return VException("Two arguments should be provided: compress(uncompressedBuffer, outputBuffer)");
+    if (args.Length() == 2){
 
-    if (!Buffer::HasInstance(args[0]))
-        return VException("Argument 1 should be a buffer");
-    if (!Buffer::HasInstance(args[1]))
-        return VException("Argument 2 should be a buffer");
+		if (!Buffer::HasInstance(args[0]))
+		    return VException("Argument 1 should be a buffer");
+		if (!Buffer::HasInstance(args[1]))
+		    return VException("Argument 2 should be a buffer");
 
-    v8::Handle<v8::Object> inputBuffer = args[0]->ToObject();
-    v8::Handle<v8::Object> outputBuffer = args[1]->ToObject();
-    
-    lzo_uint output_len = Buffer::Length(outputBuffer);//not sure if output_len is read before it is written...
-    
-    lzo_uint input_len = Buffer::Length(inputBuffer);
-    
-    compress(
-    	(unsigned char *) Buffer::Data(inputBuffer), 
-    	(unsigned char *) Buffer::Data(outputBuffer), 
-    	input_len,
-    	output_len
-    );
-    
-    return scope.Close(Integer::New(output_len));
+		v8::Handle<v8::Object> inputBuffer = args[0]->ToObject();
+		v8::Handle<v8::Object> outputBuffer = args[1]->ToObject();
+		
+		lzo_uint output_len = Buffer::Length(outputBuffer);//not sure if output_len is read before it is written...
+		
+		lzo_uint input_len = Buffer::Length(inputBuffer);
+		
+		compress(
+			(unsigned char *) Buffer::Data(inputBuffer), 
+			(unsigned char *) Buffer::Data(outputBuffer), 
+			input_len,
+			output_len
+		);
+		
+		return scope.Close(Integer::New(output_len));
+	}else if(args.Length() == 5){
+
+		if (!Buffer::HasInstance(args[0]))
+		    return VException("Argument 1 should be a buffer");
+		if (!Buffer::HasInstance(args[3]))
+		    return VException("Argument 4 should be a buffer");
+
+		v8::Handle<v8::Object> inputBuffer = args[0]->ToObject();
+		int srcOff = args[1]->Int32Value();
+		int srcLen = args[2]->Int32Value();
+		v8::Handle<v8::Object> outputBuffer = args[3]->ToObject();
+		int outOff = args[4]->Int32Value();
+		
+		lzo_uint output_len = Buffer::Length(outputBuffer) - outOff;//looks like output_len is read before it is written...
+		
+		lzo_uint input_len = srcLen;
+		
+		compress(
+			((unsigned char *) Buffer::Data(inputBuffer)) + srcOff, 
+			((unsigned char *) Buffer::Data(outputBuffer)) + outOff,
+			input_len,
+			output_len
+		);
+
+		return scope.Close(Integer::New(output_len));		    
+	}else{
+		return VException("Two or five arguments should be provided: compress(uncompressedBuffer, outputBuffer) or compress(uncompressedBuffer, srcOff, srcLen, outputBuffer, outOff)");
+	}
 }
 
 Handle<Value>
@@ -116,26 +143,47 @@ lzo_decompress(const Arguments &args)
 
 	HandleScope scope;
 
-    if (args.Length() != 2)
-        return VException("Two arguments should be provided: decompress(compressedBuffer, outputBuffer)");
+    if (args.Length() == 2){
 
-    if (!Buffer::HasInstance(args[0]))
-        return VException("Argument 1 should be a buffer");
-    if (!Buffer::HasInstance(args[1]))
-        return VException("Argument 2 should be a buffer");
+		if (!Buffer::HasInstance(args[0]))
+		    return VException("Argument 1 should be a buffer");
+		if (!Buffer::HasInstance(args[1]))
+		    return VException("Argument 2 should be a buffer");
 
-    v8::Handle<v8::Object> inputBuffer = args[0]->ToObject();
-    v8::Handle<v8::Object> outputBuffer = args[1]->ToObject();
-    
-    lzo_uint output_len = Buffer::Length(outputBuffer);//not sure if output_len is read before it is written...
-    
-    decompress(
-    	(unsigned char *) Buffer::Data(inputBuffer), 
-    	(unsigned char *) Buffer::Data(outputBuffer), 
-    	Buffer::Length(inputBuffer),
-    	output_len
-    );
-    
+		v8::Handle<v8::Object> inputBuffer = args[0]->ToObject();
+		v8::Handle<v8::Object> outputBuffer = args[1]->ToObject();
+		
+		lzo_uint output_len = Buffer::Length(outputBuffer);//not sure if output_len is read before it is written...
+		
+		decompress(
+			(unsigned char *) Buffer::Data(inputBuffer), 
+			(unsigned char *) Buffer::Data(outputBuffer), 
+			Buffer::Length(inputBuffer),
+			output_len
+		);
+	}else if(args.Length() == 5){
+		if (!Buffer::HasInstance(args[0]))
+		    return VException("Argument 1 should be a buffer");
+		if (!Buffer::HasInstance(args[3]))
+		    return VException("Argument 4 should be a buffer");
+
+		v8::Handle<v8::Object> inputBuffer = args[0]->ToObject();
+		int srcOff = args[1]->Int32Value();
+		int srcLen = args[2]->Int32Value();
+		v8::Handle<v8::Object> outputBuffer = args[3]->ToObject();
+		int outOff = args[4]->Int32Value();
+		
+		lzo_uint output_len = 0;//not read before written, I guess
+		
+		decompress(
+			((unsigned char *) Buffer::Data(inputBuffer)) + srcOff, 
+			((unsigned char *) Buffer::Data(outputBuffer)) + outOff, 
+			srcLen,
+			output_len
+		);
+	}else{
+        return VException("Two or five arguments should be provided: decompress(compressedBuffer, outputBuffer) or decompress(compressedBuffer, srcOff, srcLen, outputBuffer, outOff)");
+	}    
     return Undefined();
 }
 

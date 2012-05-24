@@ -1,7 +1,8 @@
 {
 	"name": "mini-lzo-wrapper",
-	"version": "0.1",
+	"version": "0.1.0",
 	"description": "A very low-level wrapper around the minilzo fast compression library",
+	"author": "Liam Doherty",
 	"main": "lzo",
 	"scripts": {
        "install": "node-waf configure build"

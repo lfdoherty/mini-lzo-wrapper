@@ -11,6 +11,7 @@ def set_options(opt):
 def configure(conf):
   conf.check_tool('compiler_cxx')
   conf.check_tool('node_addon')
+  #conf.env['CXXFLAGS_NODE'] = ['-D_LARGEFILE_SOURCE', '-D_FILE_OFFSET_BITS=64', '-O3']
 
 def build(bld):
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
@@ -18,5 +19,5 @@ def build(bld):
   obj.source = 'src/minilzo/minilzo.cc src/lzo.cc'
   
 def shutdown():
-	if exists('build/default/lzo.node') and not exists('lzo.node'):
-		symlink('build/default/lzo.node', 'lzo.node')
+	if exists('build/Release/lzo.node') and not exists('lzo.node'):
+		symlink('build/Release/lzo.node', 'lzo.node')
